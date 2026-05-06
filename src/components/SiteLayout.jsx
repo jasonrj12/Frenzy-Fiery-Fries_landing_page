@@ -61,7 +61,7 @@ export default function SiteLayout() {
                 <img
                   src="/logo.png"
                   alt="Frenzy & Fiery Fries"
-                  className="h-10 w-10 rounded-full ring-1 ring-white/10"
+                  className="h-10 w-10 rounded-full object-cover ring-1 ring-white/10"
                 />
                 <div className="leading-tight">
                   <div className="text-sm font-semibold tracking-tight text-white">
@@ -179,7 +179,7 @@ export default function SiteLayout() {
                     <img
                       src="/logo.png"
                       alt="Frenzy & Fiery Fries"
-                      className="h-12 w-12 rounded-full ring-2 ring-white/10"
+                      className="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
                     />
                     <div>
                       <div className="text-lg font-bold tracking-tight text-white">

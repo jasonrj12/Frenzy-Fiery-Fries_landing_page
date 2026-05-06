@@ -14,13 +14,23 @@ function priceGBP(v) {
   return `£${n.toFixed(2)}`;
 }
 
+function getCategoryFAIcon(category) {
+  const cat = category.toLowerCase();
+  if (cat.includes("burger")) return "fa-solid fa-burger";
+  if (cat.includes("chicken") || cat.includes("wing")) return "fa-solid fa-drumstick-bite";
+  if (cat.includes("fries") || cat.includes("loaded")) return "fa-solid fa-fire"; // Or fa-french-fries if available in pro, but fa-fire works for fiery fries
+  if (cat.includes("drink") || cat.includes("shake")) return "fa-solid fa-cup-togo";
+  if (cat.includes("dip") || cat.includes("side")) return "fa-solid fa-bowl-food";
+  return "fa-solid fa-utensils";
+}
+
 function Chip({ active, onClick, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={classNames(
-        "rounded-full px-4 py-2 text-xs font-semibold transition",
+        "rounded-full px-4 py-2 text-xs font-semibold transition shrink-0 whitespace-nowrap",
         active
           ? "bg-white text-zinc-900"
           : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white",
@@ -32,68 +42,42 @@ function Chip({ active, onClick, children }) {
 }
 
 function ItemCard({ item }) {
-  const modifierCount = useMemo(() => {
-    const mods = Array.isArray(item.modifiers) ? item.modifiers : [];
-    return mods.length;
-  }, [item.modifiers]);
-
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-semibold text-white">{item.name}</div>
-            {item.availability === 1 ? (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-white/70">
-                Available
-              </span>
-            ) : (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-white/50">
-                Unavailable
-              </span>
-            )}
-            {item.containsAlcohol ? (
-              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-white/60">
-                18+
-              </span>
-            ) : null}
+    <div className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20">
+      {item.imageUrl && (
+        <div className="w-32 sm:w-40 shrink-0 bg-white/5 p-3">
+          <div className="h-full w-full overflow-hidden rounded-2xl bg-zinc-950">
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
           </div>
-          <div className="mt-2 text-sm leading-6 text-white/70">
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col p-5 pl-4 sm:pl-5 justify-center">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brand-hot">
+            <i className={getCategoryFAIcon(item.category)}></i>
+            <span>{item.category}</span>
+          </div>
+          <div className="text-lg font-bold text-brand-hot">
+            {priceGBP(item.price)}
+          </div>
+        </div>
+
+        <div className="mt-2 text-base font-bold uppercase text-white">
+          {item.name}
+        </div>
+
+        {item.description && (
+          <div className="mt-1.5 text-sm leading-relaxed text-white/60 line-clamp-2">
             {item.description}
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-medium text-white/60">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-              {item.category}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-              {modifierCount} modifier{modifierCount === 1 ? "" : "s"}
-            </span>
-          </div>
-        </div>
-        <div className="text-sm font-semibold text-white">
-          {priceGBP(item.price)}
-        </div>
+        )}
       </div>
-
-      {item.imageUrl ? (
-        <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/40">
-          <img
-            src={item.imageUrl}
-            alt={item.name}
-            className="h-40 w-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      ) : null}
-
-      <button
-        type="button"
-        onClick={() => window.open('https://frenzyfieryfries-webshop.delivergate.com/', '_blank', 'noopener,noreferrer')}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 hover:bg-white/90"
-        disabled={item.availability !== 1}
-      >
-        Order now
-      </button>
     </div>
   );
 }
@@ -309,8 +293,8 @@ export default function Menu() {
             </div>
           </div>
 
-          <div className="mt-5">
-            <div className="flex flex-wrap gap-2">
+          <div className="mt-5 overflow-hidden">
+            <div className="flex overflow-x-auto gap-2 pb-2 -mb-2 scrollbar-hide">
               <Chip active={category === "all"} onClick={() => setCategory("all")}>
                 All
               </Chip>
@@ -324,10 +308,35 @@ export default function Menu() {
 
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((item) => (
-          <ItemCard key={item.id} item={item} />
-        ))}
+      <div className="mt-10">
+        {sort === "featured" ? (
+          categories.map((c) => {
+            const catItems = filtered.filter((i) => i.category === c);
+            if (catItems.length === 0) return null;
+            return (
+              <div key={c} className="mb-12">
+                <div className="flex items-center gap-3">
+                  <i className={`text-xl text-brand-hot ${getCategoryFAIcon(c)}`}></i>
+                  <h2 className="text-xl font-black uppercase tracking-wide text-white">
+                    {c}
+                  </h2>
+                </div>
+                <div className="mt-3 mb-6 h-px w-full bg-gradient-to-r from-brand-hot/50 to-transparent" />
+                <div className="grid gap-4 md:grid-cols-2">
+                  {catItems.map((item) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {filtered.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
 
       {filtered.length === 0 ? (

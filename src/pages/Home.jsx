@@ -1,11 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+
 import { Icon, classNames } from "../lib/ui.jsx";
 import { fetchDelivergateMenu, normalizeDelivergateMenu } from "../lib/delivergate.js";
 
-const primaryCtas = [
-  { label: "Order Now", to: "https://frenzyfieryfries-webshop.delivergate.com/food-menu", target: "_blank", rel: "noopener noreferrer" },
-];
+
 
 function Badge({ children }) {
   return (
@@ -17,7 +15,7 @@ function Badge({ children }) {
 }
 
 function ImageSlider() {
-  const images = ["/CHOKHAT Blog.jpg", "/CHOKHAT Blog2.jpg", "Web hero.png"];
+  const images = ["/loaded_fiery_fries_wide.png", "/smash_burger_wide.png", "Web hero.png"];
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -106,9 +104,9 @@ function FeaturedItemCard({ item }) {
       href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 backdrop-blur transition hover:border-white/15 block"
+      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 backdrop-blur transition hover:border-white/15 flex flex-col aspect-square"
     >
-      <div className="relative h-48 w-full overflow-hidden">
+      <div className="relative flex-1 w-full overflow-hidden">
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
@@ -146,7 +144,7 @@ function CategoryCard({ title, tag, accent, glyph }) {
       href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/7 to-white/3 p-6 backdrop-blur transition hover:border-white/15"
+      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/7 to-white/3 p-6 backdrop-blur transition hover:border-white/15 aspect-square flex flex-col justify-between"
     >
       <div className="absolute inset-0 opacity-60">
         <div
@@ -347,6 +345,7 @@ export default function Home() {
         });
 
         const newFeaturedItems = [];
+        const seenNames = new Set();
 
         categories.forEach(cat => {
           const itemsInCat = availableItems.filter(item => item.category === cat);
@@ -365,8 +364,10 @@ export default function Home() {
             return bImage - aImage;
           });
 
-          if (itemsInCat.length > 0) {
-            newFeaturedItems.push(itemsInCat[0]);
+          const uniqueItem = itemsInCat.find(item => !seenNames.has(item.name));
+          if (uniqueItem) {
+            seenNames.add(uniqueItem.name);
+            newFeaturedItems.push(uniqueItem);
           }
         });
 
@@ -454,28 +455,7 @@ export default function Home() {
               Hand-cut fries, house-made dips, smash burgers, and spicy
               chicken—crafted for maximum flavour and delivered hot.
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              {primaryCtas.map((cta) => (
-                <Link
-                  key={cta.label}
-                  to={cta.to}
-                  target={cta.target}
-                  rel={cta.rel}
-                  className={classNames(
-                    "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition",
-                    cta.label === "Order Now"
-                      ? "bg-white text-zinc-900 hover:bg-white/90"
-                      : "border border-white/15 bg-white/5 text-white hover:bg-white/10",
-                  )}
-                >
-                  {cta.label}
-                </Link>
-              ))}
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-3 text-xs font-medium text-white/70 backdrop-blur">
-                <Icon name="clock" className="h-4 w-4 text-white/70" />
-                <span>Avg. delivery 15 - 20 mins</span>
-              </div>
-            </div>
+
 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               <Pill
@@ -502,6 +482,10 @@ export default function Home() {
         </div>
       </div>
 
+      <Section>
+        <ImageSlider />
+      </Section>
+
       <Section
         eyebrow="Featured Menu"
         title="Pick your flavour lane"
@@ -510,7 +494,7 @@ export default function Home() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {loadingItems ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-64 rounded-3xl border border-white/10 bg-white/5 animate-pulse" />
+              <div key={i} className="aspect-square rounded-3xl border border-white/10 bg-white/5 animate-pulse" />
             ))
           ) : featuredItems.length > 0 ? (
             featuredItems.map((item) => (
@@ -549,9 +533,6 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section>
-        <ImageSlider />
-      </Section>
     </>
   );
 }
