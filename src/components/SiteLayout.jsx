@@ -21,9 +21,15 @@ function NavPill({ to, children }) {
   );
 }
 
+
 export default function SiteLayout() {
   const location = useLocation();
   const [showTop, setShowTop] = useState(false);
+
+  // Scroll to top on route change
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
 
   const links = useMemo(
     () => [
