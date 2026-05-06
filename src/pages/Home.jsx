@@ -8,7 +8,7 @@ import { fetchDelivergateMenu, normalizeDelivergateMenu } from "../lib/deliverga
 function Badge({ children }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
-      <span className="h-1.5 w-1.5 rounded-full bg-brand-mustard" />
+      <span className="h-2.5 w-2.5 rounded-full bg-brand-mustard" />
       {children}
     </span>
   );
@@ -419,8 +419,8 @@ export default function Home() {
       {
         name: "Ayesha",
         stars: 5,
-        quote: "The fries were unreal—spicy, crunchy, and still hot on arrival.",
-        meta: "Delivery • 25–35 mins",
+        quote: "The fries were unreal - spicy, crunchy, and still hot on arrival.",
+        meta: "Delivery • 15 - 20 mins",
       },
       {
         name: "Khalid",
