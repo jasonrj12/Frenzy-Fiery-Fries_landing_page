@@ -1,4 +1,4 @@
-# Frenzy & Fiery Fries — Landing Page
+# Frenzy & Fiery Fries - Landing Page
 
 React (JSX) + Tailwind CSS landing page inspired by the layout/sections of:
 - `https://grabordine.co.uk/`
