@@ -14,15 +14,7 @@ function priceGBP(v) {
   return `£${n.toFixed(2)}`;
 }
 
-function getCategoryFAIcon(category) {
-  const cat = category.toLowerCase();
-  if (cat.includes("burger")) return "fa-solid fa-burger";
-  if (cat.includes("chicken") || cat.includes("wing")) return "fa-solid fa-drumstick-bite";
-  if (cat.includes("fries") || cat.includes("loaded")) return "fa-solid fa-fire"; // Or fa-french-fries if available in pro, but fa-fire works for fiery fries
-  if (cat.includes("drink") || cat.includes("shake")) return "fa-solid fa-cup-togo";
-  if (cat.includes("dip") || cat.includes("side")) return "fa-solid fa-bowl-food";
-  return "fa-solid fa-utensils";
-}
+
 
 function Chip({ active, onClick, children }) {
   return (
@@ -59,11 +51,10 @@ function ItemCard({ item }) {
 
       <div className="flex flex-1 flex-col p-5 pl-4 sm:pl-5 justify-center">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-brand-hot">
-            <i className={getCategoryFAIcon(item.category)}></i>
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400">
             <span>{item.category}</span>
           </div>
-          <div className="text-lg font-bold text-brand-hot">
+          <div className="text-lg font-bold text-amber-400">
             {priceGBP(item.price)}
           </div>
         </div>
@@ -316,12 +307,11 @@ export default function Menu() {
             return (
               <div key={c} className="mb-12">
                 <div className="flex items-center gap-3">
-                  <i className={`text-xl text-brand-hot ${getCategoryFAIcon(c)}`}></i>
                   <h2 className="text-xl font-black uppercase tracking-wide text-white">
                     {c}
                   </h2>
                 </div>
-                <div className="mt-3 mb-6 h-px w-full bg-gradient-to-r from-brand-hot/50 to-transparent" />
+                <div className="mt-3 mb-6 h-px w-full bg-gradient-to-r from-amber-400/50 to-transparent" />
                 <div className="grid gap-4 md:grid-cols-2">
                   {catItems.map((item) => (
                     <ItemCard key={item.id} item={item} />
