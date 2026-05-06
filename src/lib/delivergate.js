@@ -10,6 +10,7 @@ export const DELIVERGATE_ORDER_METHODS_URL =
   "https://webshop.delivergate.com/api/v1/webshop-brand/1/outlet/2/order-methods";
 
 export const DELIVERGATE_TENANT_CODE = "frenzyfieryfries";
+export const DELIVERGATE_WEBSHOP_URL = "https://frenzyfieryfries-webshop.delivergate.com/";
 
 export async function fetchDelivergateMenu({ signal } = {}) {
   const res = await fetch(DELIVERGATE_MENU_URL, {
@@ -158,6 +159,54 @@ export function normalizeDelivergateMenu(payload) {
   return { categories, items };
 }
 
+export function normalizeMenuOffers(payload) {
+  const data = payload?.data;
+  if (!data || typeof data !== "object") return [];
+
+  const offers = [];
+  const seen = new Set();
+
+  for (const catName of Object.keys(data)) {
+    const arr = Array.isArray(data[catName]) ? data[catName] : [];
+    for (const p of arr) {
+      const isSale = Number(p?.is_sale) === 1;
+      const isBogo = Number(p?.has_bogo_offer) === 1;
+      if (!isSale && !isBogo) continue;
+
+      const itemId = String(p?.id ?? `menu-offer-${p?.title}`);
+      if (seen.has(itemId)) continue; // skip duplicates across categories
+      seen.add(itemId);
+
+      const price = Number(p?.price ?? 0);
+      const salePrice = p?.sale_price != null ? Number(p.sale_price) : null;
+      const badgeLabel = isBogo
+        ? "BOGO"
+        : salePrice != null && salePrice < price
+        ? `Was £${price.toFixed(2)}`
+        : "On Sale";
+
+      // Build a clean webshop URL for this item
+      const itemUrl = `https://frenzyfieryfries-webshop.delivergate.com/?category=${encodeURIComponent(catName)}&item=${encodeURIComponent(String(p?.title ?? ""))}`;
+
+      offers.push({
+        id: itemId,
+        title: String(p?.title ?? "Special Offer"),
+        body: String(p?.description ?? "").trim(),
+        badge: badgeLabel,
+        price,
+        salePrice,
+        imageUrl: p?.image_url ?? null,
+        category: catName,
+        isBogo,
+        isSale,
+        itemUrl,
+      });
+    }
+  }
+
+  return offers;
+}
+
 export function normalizeDelivergatePromotions(payload) {
   const arr = payload?.data;
   if (!Array.isArray(arr)) return [];
@@ -175,6 +224,7 @@ export function normalizeDelivergatePromotions(payload) {
         title: String(p?.heading ?? "Promotion").trim(),
         body,
         badge: p?.ref ? String(p.ref) : "Promotion",
+        isRealTime: Boolean(p?.real_time),
         raw: p,
       };
     })

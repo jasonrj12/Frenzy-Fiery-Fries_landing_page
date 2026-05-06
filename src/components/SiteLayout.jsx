@@ -116,40 +116,46 @@ export default function SiteLayout() {
             <Outlet />
           </div>
 
-          <nav className="fixed inset-x-0 bottom-0 z-50 md:hidden pointer-events-none pb-5">
-            <div className="flex justify-center px-4">
-              <div className="pointer-events-auto flex w-full max-w-[320px] items-center justify-between rounded-3xl border border-white/10 bg-zinc-950/80 p-1.5 shadow-2xl backdrop-blur-xl">
-                {links.map((l) => (
-                  <NavLink
-                    key={l.to}
-                    to={l.to}
-                    end={l.to === "/"}
-                    className={({ isActive }) =>
-                      classNames(
-                        "relative flex w-[88px] flex-col items-center justify-center gap-1 rounded-2xl py-2.5 transition-all duration-300",
-                        isActive
-                          ? "bg-white/10 text-white"
-                          : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200",
-                      )
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          name={l.icon}
-                          className={classNames(
-                            "h-[22px] w-[22px] transition-transform duration-300",
-                            isActive ? "text-brand-hot scale-110" : "text-current scale-100"
-                          )}
+          <nav className="fixed inset-x-0 bottom-0 z-50 md:hidden" style={{background: "rgba(9,9,11,0.97)", backdropFilter: "blur(24px)", borderTop: "1px solid rgba(255,255,255,0.07)"}}>
+            <div className="flex items-stretch justify-around">
+              {links.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  end={l.to === "/"}
+                  className="relative flex flex-1 flex-col items-center justify-center gap-1 py-3 transition-colors duration-200"
+                  style={{minHeight: "62px"}}
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <span
+                          className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-10 rounded-full"
+                          style={{
+                            background: "linear-gradient(90deg, #ff4500, #ff8c00)",
+                            boxShadow: "0 0 10px 2px rgba(255,80,0,0.55)"
+                          }}
                         />
-                        <span className="text-[10px] font-semibold tracking-wide">
-                          {l.label}
-                        </span>
-                      </>
-                    )}
-                  </NavLink>
-                ))}
-              </div>
+                      )}
+                      <Icon
+                        name={l.icon}
+                        className={classNames(
+                          "h-[22px] w-[22px] transition-all duration-200",
+                          isActive ? "text-orange-500" : "text-zinc-500"
+                        )}
+                      />
+                      <span
+                        className={classNames(
+                          "text-[10px] font-semibold tracking-wide transition-colors duration-200",
+                          isActive ? "text-white" : "text-zinc-500"
+                        )}
+                      >
+                        {l.label}
+                      </span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
             </div>
           </nav>
 
