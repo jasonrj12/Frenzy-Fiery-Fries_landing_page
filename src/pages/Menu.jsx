@@ -31,7 +31,7 @@ function Chip({ active, onClick, children }) {
   );
 }
 
-function ItemCard({ item, onAdd }) {
+function ItemCard({ item }) {
   const modifierCount = useMemo(() => {
     const mods = Array.isArray(item.modifiers) ? item.modifiers : [];
     return mods.length;
@@ -88,12 +88,11 @@ function ItemCard({ item, onAdd }) {
 
       <button
         type="button"
-        onClick={() => onAdd(item)}
+        onClick={() => window.open('https://frenzyfieryfries-webshop.delivergate.com/', '_blank', 'noopener,noreferrer')}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 hover:bg-white/90"
         disabled={item.availability !== 1}
       >
-        Add to order
-        <span className="text-zinc-900/70">+</span>
+        Order now
       </button>
     </div>
   );
@@ -102,9 +101,8 @@ function ItemCard({ item, onAdd }) {
 export default function Menu() {
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
-  const [availableOnly, setAvailableOnly] = useState(true);
   const [sort, setSort] = useState("featured"); // featured | priceAsc | priceDesc
-  const [cart, setCart] = useState(() => new Map());
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
   const [remoteStatus, setRemoteStatus] = useState("loading"); // loading | ready | error
   const [remoteCategories, setRemoteCategories] = useState([]);
@@ -163,27 +161,10 @@ export default function Menu() {
     return MENU_CATEGORIES.map((c) => c.label);
   }, [itemsSource, remoteCategories]);
 
-  const cartCount = useMemo(() => {
-    let c = 0;
-    cart.forEach((qty) => {
-      c += qty;
-    });
-    return c;
-  }, [cart]);
-
-  const cartTotal = useMemo(() => {
-    let total = 0;
-    cart.forEach((qty, id) => {
-      const item = items.find((x) => x.id === id);
-      if (item) total += item.price * qty;
-    });
-    return total;
-  }, [cart, items]);
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let out = items.filter((i) => {
-      if (availableOnly && i.availability !== 1) return false;
+      if (i.availability !== 1) return false;
       if (category !== "all" && i.category !== category) return false;
       if (!q) return true;
       return (
@@ -203,19 +184,7 @@ export default function Menu() {
     if (sort === "priceAsc") out = out.slice().sort((a, b) => a.price - b.price);
     if (sort === "priceDesc") out = out.slice().sort((a, b) => b.price - a.price);
     return out;
-  }, [availableOnly, category, items, query, sort]);
-
-  function addToCart(item) {
-    setCart((prev) => {
-      const next = new Map(prev);
-      next.set(item.id, (next.get(item.id) || 0) + 1);
-      return next;
-    });
-  }
-
-  function clearCart() {
-    setCart(new Map());
-  }
+  }, [category, items, query, sort]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14">
@@ -233,27 +202,6 @@ export default function Menu() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-white/60">
-                Your order
-              </div>
-              <div className="mt-1 text-sm font-semibold text-white">
-                {cartCount} item{cartCount === 1 ? "" : "s"} •{" "}
-                {priceGBP(cartTotal)}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={clearCart}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/70 hover:bg-white/10 hover:text-white"
-              disabled={cartCount === 0}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
       </div>
 
       {remoteStatus === "loading" ? (
@@ -276,33 +224,88 @@ export default function Menu() {
         </div>
       ) : null}
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_0.55fr]">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+      <div className="relative z-30 mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="text-xs font-semibold uppercase tracking-wider text-white/60">
                 Search
               </label>
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Try “loaded”, “dip”, “spicy”…"
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-zinc-950/40 px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none ring-brand-mustard/30 focus:ring-2"
-              />
+              <div className="relative mt-2">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Try “loaded”, “dip”, “spicy”…"
+                  className="w-full rounded-2xl border border-white/10 bg-zinc-950/40 px-4 py-3 pr-10 text-sm text-white placeholder:text-white/35 outline-none ring-brand-mustard/30 focus:ring-2"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-white/50 transition hover:bg-white/10 hover:text-white"
+                    aria-label="Clear search"
+                  >
+                    <Icon name="x" className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
-            <div>
+            <div className="relative z-20">
               <label className="text-xs font-semibold uppercase tracking-wider text-white/60">
                 Sort
               </label>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="mt-2 w-full rounded-2xl border border-white/10 bg-zinc-950/40 px-4 py-3 text-sm text-white outline-none ring-brand-mustard/30 focus:ring-2"
-              >
-                <option value="featured">Featured</option>
-                <option value="priceAsc">Price: low to high</option>
-                <option value="priceDesc">Price: high to low</option>
-              </select>
+              <div className="relative mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/40 px-4 py-3 text-left text-sm text-white outline-none ring-brand-mustard/30 transition-all hover:bg-white/5 focus:ring-2"
+                >
+                  <span>
+                    {sort === "featured" && "Featured"}
+                    {sort === "priceAsc" && "Price: low to high"}
+                    {sort === "priceDesc" && "Price: high to low"}
+                  </span>
+                  <Icon
+                    name="chevron-down"
+                    className={classNames(
+                      "h-4 w-4 text-white/50 transition-transform duration-200",
+                      isSortOpen ? "rotate-180" : ""
+                    )}
+                  />
+                </button>
+
+                {isSortOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setIsSortOpen(false)}
+                    />
+                    <div className="absolute left-0 top-[calc(100%+0.5rem)] z-40 w-full overflow-hidden rounded-2xl border border-white/10 bg-zinc-900 p-1.5 shadow-2xl ring-1 ring-white/5 backdrop-blur-xl">
+                      {[
+                        { value: "featured", label: "Featured" },
+                        { value: "priceAsc", label: "Price: low to high" },
+                        { value: "priceDesc", label: "Price: high to low" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setSort(opt.value);
+                            setIsSortOpen(false);
+                          }}
+                          className={classNames(
+                            "flex w-full items-center rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+                            sort === opt.value
+                              ? "bg-brand-hot/15 text-brand-hot font-medium"
+                              : "text-white/70 hover:bg-white/10 hover:text-white"
+                          )}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -319,56 +322,11 @@ export default function Menu() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-3xl border border-white/10 bg-zinc-950/40 p-5">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-white/60">
-                  Availability
-                </div>
-                <div className="mt-1 text-sm font-semibold text-white">
-                  {availableOnly ? "Available only" : "Show all items"}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setAvailableOnly((v) => !v)}
-                className={classNames(
-                  "rounded-full px-4 py-2 text-xs font-semibold transition",
-                  availableOnly
-                    ? "bg-white text-zinc-900"
-                    : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white",
-                )}
-              >
-                {availableOnly ? "On" : "Off"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-brand-hot/20 via-white/5 to-brand-mustard/15 p-6 backdrop-blur">
-          <div className="text-xs font-semibold uppercase tracking-wider text-white/60">
-            Tip
-          </div>
-          <div className="mt-2 text-lg font-semibold text-white">
-            Make it your menu
-          </div>
-          <p className="mt-2 text-sm leading-6 text-white/75">
-            Replace the menu data source whenever you’re ready.
-          </p>
-          <div className="mt-5 rounded-3xl border border-white/10 bg-zinc-950/30 p-5">
-            <div className="text-sm font-semibold text-white">
-              Showing {filtered.length} item{filtered.length === 1 ? "" : "s"}
-            </div>
-            <p className="mt-2 text-sm text-white/70">
-              Use search + filters to narrow it down.
-            </p>
-          </div>
-        </div>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((item) => (
-          <ItemCard key={item.id} item={item} onAdd={addToCart} />
+          <ItemCard key={item.id} item={item} />
         ))}
       </div>
 

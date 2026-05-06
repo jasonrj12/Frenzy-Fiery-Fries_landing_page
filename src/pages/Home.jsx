@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Icon, classNames } from "../lib/ui.jsx";
+import { fetchDelivergateMenu, normalizeDelivergateMenu } from "../lib/delivergate.js";
 
 const primaryCtas = [
-  { label: "Order Now", to: "/menu" },
-  { label: "View Menu", to: "/menu" },
+  { label: "Order Now", to: "https://frenzyfieryfries-webshop.delivergate.com/food-menu", target: "_blank", rel: "noopener noreferrer" },
 ];
 
 function Badge({ children }) {
@@ -17,7 +17,7 @@ function Badge({ children }) {
 }
 
 function ImageSlider() {
-  const images = ["/CHOKHAT Blog.jpg", "/CHOKHAT Blog2.jpg"];
+  const images = ["/CHOKHAT Blog.jpg", "/CHOKHAT Blog2.jpg", "Web hero.png"];
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
@@ -100,10 +100,52 @@ function Pill({ icon, title, body }) {
   );
 }
 
+function FeaturedItemCard({ item }) {
+  return (
+    <a
+      href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 backdrop-blur transition hover:border-white/15 block"
+    >
+      <div className="relative h-48 w-full overflow-hidden">
+        {item.imageUrl ? (
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-white/5">
+            <span className="text-4xl">🍽️</span>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+      </div>
+
+      <div className="relative -mt-6 p-6 pt-0">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="mt-2 text-lg font-semibold text-white">{item.name}</div>
+          </div>
+          <div className="text-sm font-semibold text-white bg-white/10 px-3 py-1 rounded-full border border-white/10 whitespace-nowrap">
+            £{Number(item.price).toFixed(2)}
+          </div>
+        </div>
+        <div className="mt-4 flex items-center text-sm font-semibold text-white/80 transition-colors group-hover:text-brand-mustard">
+          Order Now <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 function CategoryCard({ title, tag, accent, glyph }) {
   return (
-    <Link
-      to="/menu"
+    <a
+      href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
+      target="_blank"
+      rel="noopener noreferrer"
       className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/7 to-white/3 p-6 backdrop-blur transition hover:border-white/15"
     >
       <div className="absolute inset-0 opacity-60">
@@ -131,7 +173,7 @@ function CategoryCard({ title, tag, accent, glyph }) {
           {glyph}
         </div>
       </div>
-    </Link>
+    </a>
   );
 }
 
@@ -171,14 +213,14 @@ function HeatMeter() {
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
+
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const rotateX = ((y - centerY) / centerY) * -10;
     const rotateY = ((x - centerX) / centerX) * 10;
-    
+
     cardRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    
+
     glowRef.current.style.transform = `translate(${x}px, ${y}px)`;
     glowRef.current.style.opacity = '1';
   };
@@ -191,7 +233,7 @@ function HeatMeter() {
 
   return (
     <div className="relative w-full" style={{ perspective: '1000px' }}>
-      <div 
+      <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -203,7 +245,7 @@ function HeatMeter() {
           current.from, current.to
         )} />
 
-        <div 
+        <div
           ref={glowRef}
           className={classNames(
             "pointer-events-none absolute left-0 top-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[80px] transition-opacity duration-300",
@@ -227,7 +269,7 @@ function HeatMeter() {
                 current.from, current.to,
                 heat === 3 ? "animate-pulse opacity-100 scale-110" : "opacity-40"
               )} />
-              
+
               <div className="relative z-10 flex h-28 w-28 items-center justify-center rounded-full border border-white/20 bg-zinc-900 shadow-xl transition-all duration-500">
                 <span className={classNames(
                   "text-3xl font-black italic tracking-tighter transition-colors duration-500",
@@ -237,7 +279,7 @@ function HeatMeter() {
                   {heat + 1}
                 </span>
               </div>
-              
+
               <svg className="absolute inset-0 h-full w-full animate-[spin_12s_linear_infinite]" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="4 8" />
               </svg>
@@ -258,7 +300,7 @@ function HeatMeter() {
                   onClick={() => setHeat(idx)}
                   className={classNames(
                     "relative flex-1 overflow-hidden rounded-xl py-2.5 text-xs font-bold transition-all duration-300",
-                    heat === idx 
+                    heat === idx
                       ? classNames(lvl.bg, "text-white shadow-lg scale-105", lvl.shadow)
                       : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                   )}
@@ -278,7 +320,70 @@ function HeatMeter() {
 }
 
 export default function Home() {
-  const featured = useMemo(
+  const [featuredItems, setFeaturedItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(true);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    setLoadingItems(true);
+
+    fetchDelivergateMenu({ signal: ac.signal })
+      .then((menuJson) => {
+        const normalizedMenu = normalizeDelivergateMenu(menuJson);
+        const availableItems = normalizedMenu.items.filter(
+          (item) => item.availability === 1
+        );
+
+        let categories = [...new Set(availableItems.map(item => item.category))];
+
+        // Exclude "build your taste"
+        categories = categories.filter(c => !c.toLowerCase().includes("build your taste"));
+
+        // Prioritize "wing" or "chicken" categories so they make the top 4
+        categories.sort((a, b) => {
+          const aPriority = a.toLowerCase().includes("wing") || a.toLowerCase().includes("chicken") ? 1 : 0;
+          const bPriority = b.toLowerCase().includes("wing") || b.toLowerCase().includes("chicken") ? 1 : 0;
+          return bPriority - aPriority;
+        });
+
+        const newFeaturedItems = [];
+
+        categories.forEach(cat => {
+          const itemsInCat = availableItems.filter(item => item.category === cat);
+
+          // Prioritize items with images, and explicitly items with "wing"
+          itemsInCat.sort((a, b) => {
+            const aImage = a.imageUrl ? 1 : 0;
+            const bImage = b.imageUrl ? 1 : 0;
+
+            const aWing = a.name.toLowerCase().includes("wing") ? 1 : 0;
+            const bWing = b.name.toLowerCase().includes("wing") ? 1 : 0;
+
+            // If one has "wing" and the other doesn't, prioritize "wing"
+            if (aWing !== bWing) return bWing - aWing;
+            // Otherwise fallback to image priority
+            return bImage - aImage;
+          });
+
+          if (itemsInCat.length > 0) {
+            newFeaturedItems.push(itemsInCat[0]);
+          }
+        });
+
+        setFeaturedItems(newFeaturedItems.slice(0, 4));
+        setLoadingItems(false);
+      })
+      .catch((e) => {
+        if (!ac.signal.aborted) {
+          console.error("Failed to fetch featured menu items:", e);
+          setLoadingItems(false);
+        }
+      });
+
+    return () => ac.abort();
+  }, []);
+
+  const fallbackCategories = useMemo(
     () => [
       {
         tag: "Popular",
@@ -354,6 +459,8 @@ export default function Home() {
                 <Link
                   key={cta.label}
                   to={cta.to}
+                  target={cta.target}
+                  rel={cta.rel}
                   className={classNames(
                     "inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition",
                     cta.label === "Order Now"
@@ -366,7 +473,7 @@ export default function Home() {
               ))}
               <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-3 text-xs font-medium text-white/70 backdrop-blur">
                 <Icon name="clock" className="h-4 w-4 text-white/70" />
-                <span>Avg. delivery 25–35 mins</span>
+                <span>Avg. delivery 15 - 20 mins</span>
               </div>
             </div>
 
@@ -401,39 +508,33 @@ export default function Home() {
         subtitle="Start with the classics, then turn up the heat. Build your own combo in seconds."
       >
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {featured.map((c) => (
-            <CategoryCard
-              key={c.title}
-              title={c.title}
-              tag={c.tag}
-              accent={c.accent}
-              glyph={c.glyph}
-            />
-          ))}
+          {loadingItems ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-64 rounded-3xl border border-white/10 bg-white/5 animate-pulse" />
+            ))
+          ) : featuredItems.length > 0 ? (
+            featuredItems.map((item) => (
+              <FeaturedItemCard key={item.id} item={item} />
+            ))
+          ) : (
+            fallbackCategories.map((c) => (
+              <CategoryCard
+                key={c.title}
+                title={c.title}
+                tag={c.tag}
+                accent={c.accent}
+                glyph={c.glyph}
+              />
+            ))
+          )}
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-          <div className="max-w-2xl">
-            <div className="text-sm font-semibold text-white">
-              Want the full menu?
-            </div>
-            <p className="mt-2 text-sm text-white/70">
-              Go to the Menu page for search, filters, and spice-level sorting.
-            </p>
-          </div>
-          <Link
-            to="/menu"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10"
-          >
-            View full menu
-          </Link>
-        </div>
+
       </Section>
 
       <Section
         eyebrow="What customers say"
         title="Real reviews, real cravings"
-        subtitle="Swap these placeholders with your live Google/Deliveroo/Just Eat reviews whenever you’re ready."
       >
         <div className="grid gap-4 lg:grid-cols-3">
           {reviews.map((r) => (
@@ -454,4 +555,5 @@ export default function Home() {
     </>
   );
 }
+
 

@@ -98,12 +98,14 @@ export default function SiteLayout() {
               </nav>
 
               <div className="flex items-center gap-2">
-                <Link
-                  to="/menu"
+                <a
+                  href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-white/90"
                 >
                   Order Now
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -114,9 +116,9 @@ export default function SiteLayout() {
             <Outlet />
           </div>
 
-          <nav className="fixed inset-x-0 bottom-0 z-50 md:hidden">
-            <div className="mx-auto w-full max-w-6xl px-4 pb-6 sm:px-6">
-              <div className="flex items-center justify-around rounded-[2.5rem] border border-white/10 bg-zinc-900/80 p-2 shadow-2xl backdrop-blur-xl">
+          <nav className="fixed inset-x-0 bottom-0 z-50 md:hidden pointer-events-none pb-5">
+            <div className="flex justify-center px-4">
+              <div className="pointer-events-auto flex w-full max-w-[320px] items-center justify-between rounded-3xl border border-white/10 bg-zinc-950/80 p-1.5 shadow-2xl backdrop-blur-xl">
                 {links.map((l) => (
                   <NavLink
                     key={l.to}
@@ -124,21 +126,27 @@ export default function SiteLayout() {
                     end={l.to === "/"}
                     className={({ isActive }) =>
                       classNames(
-                        "relative flex flex-col items-center gap-1.5 rounded-full px-6 py-3 transition-all duration-300",
+                        "relative flex w-[88px] flex-col items-center justify-center gap-1 rounded-2xl py-2.5 transition-all duration-300",
                         isActive
-                          ? "bg-white text-zinc-950 scale-105 shadow-lg"
-                          : "text-white/60 hover:text-white",
+                          ? "bg-white/10 text-white"
+                          : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200",
                       )
                     }
                   >
-                    <Icon name={l.icon} className="h-5 w-5" />
-                    <span className="text-[11px] font-bold tracking-tight">
-                      {l.label}
-                    </span>
-                    {/* Active indicator dot */}
-                    {/* {isActive && (
-                      <span className="absolute -bottom-1.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-hot shadow-[0_0_8px_rgba(255,50,0,0.8)]" />
-                    )} */}
+                    {({ isActive }) => (
+                      <>
+                        <Icon
+                          name={l.icon}
+                          className={classNames(
+                            "h-[22px] w-[22px] transition-transform duration-300",
+                            isActive ? "text-brand-hot scale-110" : "text-current scale-100"
+                          )}
+                        />
+                        <span className="text-[10px] font-semibold tracking-wide">
+                          {l.label}
+                        </span>
+                      </>
+                    )}
                   </NavLink>
                 ))}
               </div>
