@@ -148,6 +148,7 @@ export function normalizeDelivergateMenu(payload) {
         description: String(p?.description ?? ""),
         imageUrl: p?.image_url ?? null,
         price: Number(p?.price ?? 0),
+        salePrice: p?.sale_price != null ? Number(p.sale_price) : null,
         availability: Number(p?.availability ?? 1),
         containsAlcohol: Boolean(p?.contains_alcohol),
         modifiers: Array.isArray(p?.modifiers) ? p.modifiers : [],

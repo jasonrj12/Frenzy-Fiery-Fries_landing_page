@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { PROMOTIONS } from "../data/promotions.js";
+// import { PROMOTIONS } from "../data/promotions.js";
 import { classNames } from "../lib/ui.jsx";
 import {
   fetchDelivergatePromotions,
@@ -85,7 +85,7 @@ function OfferCard({ offer }) {
         ) : null}
 
         {/* Price row */}
-        {offer.salePrice != null ? (
+        {offer.salePrice != null && offer.salePrice < offer.price ? (
           <div className="mt-auto flex items-baseline gap-2 pt-3">
             <span className="text-2xl font-extrabold text-brand-mustard">
               £{Number(offer.salePrice).toFixed(2)}
@@ -96,6 +96,10 @@ function OfferCard({ offer }) {
             <span className="ml-auto rounded-full bg-brand-ember/20 px-2 py-0.5 text-[11px] font-bold text-brand-ember">
               {Math.round((1 - offer.salePrice / offer.price) * 100)}% off
             </span>
+          </div>
+        ) : offer.salePrice != null && offer.salePrice >= offer.price ? (
+          <div className="mt-auto pt-3 text-xl font-bold text-white">
+            £{Number(offer.salePrice).toFixed(2)}
           </div>
         ) : offer.price > 0 ? (
           <div className="mt-auto pt-3 text-xl font-bold text-white">
@@ -156,9 +160,10 @@ export default function Promotions() {
   }, []);
 
   const regularPromos = useMemo(() => {
-    const list =
-      remoteStatus === "ready" && remotePromos.length ? remotePromos : PROMOTIONS;
-    return list.filter((p) => !p.isRealTime);
+    if (remoteStatus === "ready" && remotePromos.length) {
+      return remotePromos.filter((p) => !p.isRealTime);
+    }
+    return [];
   }, [remotePromos, remoteStatus]);
 
   const realTimeOffers = useMemo(() => {
@@ -237,7 +242,7 @@ export default function Promotions() {
         ) : remoteStatus === "error" ? (
           <div className="rounded-2xl border border-brand-hot/20 bg-brand-hot/5 p-6 text-sm text-white/60">
             <div className="font-semibold text-white mb-1">Couldn't load live offers</div>
-            Showing static promotions only. Please try again later.
+            Please try again later.
           </div>
         ) : realTimeOffers.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

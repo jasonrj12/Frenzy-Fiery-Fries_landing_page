@@ -34,6 +34,7 @@ function Chip({ active, onClick, children }) {
 }
 
 function ItemCard({ item }) {
+  const hasOffer = item.salePrice != null && item.salePrice < item.price;
   return (
     <div className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20">
       {item.imageUrl && (
@@ -54,8 +55,18 @@ function ItemCard({ item }) {
           <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400">
             <span>{item.category}</span>
           </div>
-          <div className="text-lg font-bold text-amber-400">
-            {priceGBP(item.price)}
+          <div className="flex items-baseline gap-2">
+            {hasOffer ? (
+              <>
+                <span className="text-lg font-extrabold text-brand-mustard">{priceGBP(item.salePrice)}</span>
+                <span className="text-sm text-white/40 line-through">{priceGBP(item.price)}</span>
+                <span className="ml-1 rounded-full bg-brand-ember/20 px-2 py-0.5 text-[11px] font-bold text-brand-ember">
+                  {Math.round((1 - item.salePrice / item.price) * 100)}% off
+                </span>
+              </>
+            ) : (
+              <span className="text-lg font-bold text-amber-400">{priceGBP(item.price)}</span>
+            )}
           </div>
         </div>
 
@@ -132,8 +143,14 @@ export default function Menu() {
   }, [itemsSource, remoteItems]);
 
   const categories = useMemo(() => {
-    if (itemsSource === "delivergate") return remoteCategories;
-    return MENU_CATEGORIES.map((c) => c.label);
+    let cats = itemsSource === "delivergate" ? [...remoteCategories] : MENU_CATEGORIES.map((c) => c.label);
+    // Move 'Buy 1 Get 1' category (case-insensitive match) after the first category
+    const bogoIndex = cats.findIndex(c => c.toLowerCase().includes('buy 1 get 1'));
+    if (bogoIndex > 0) {
+      const [bogo] = cats.splice(bogoIndex, 1);
+      cats.splice(1, 0, bogo);
+    }
+    return cats;
   }, [itemsSource, remoteCategories]);
 
   const filtered = useMemo(() => {
