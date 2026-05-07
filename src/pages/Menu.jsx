@@ -34,7 +34,7 @@ function Chip({ active, onClick, children }) {
 }
 
 function ItemCard({ item }) {
-  const hasOffer = item.salePrice != null && item.salePrice < item.price;
+  const hasOffer = item.salePrice != null && item.salePrice > 0 && item.salePrice < item.price;
   return (
     <div className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20">
       {item.imageUrl && (

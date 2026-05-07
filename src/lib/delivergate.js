@@ -182,7 +182,7 @@ export function normalizeMenuOffers(payload) {
       const salePrice = p?.sale_price != null ? Number(p.sale_price) : null;
       const badgeLabel = isBogo
         ? "BOGO"
-        : salePrice != null && salePrice < price
+        : salePrice != null && salePrice > 0 && salePrice < price
         ? `Was £${price.toFixed(2)}`
         : "On Sale";
 

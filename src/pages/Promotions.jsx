@@ -85,7 +85,7 @@ function OfferCard({ offer }) {
         ) : null}
 
         {/* Price row */}
-        {offer.salePrice != null && offer.salePrice < offer.price ? (
+        {offer.salePrice != null && offer.salePrice > 0 && offer.salePrice < offer.price ? (
           <div className="mt-auto flex items-baseline gap-2 pt-3">
             <span className="text-2xl font-extrabold text-brand-mustard">
               £{Number(offer.salePrice).toFixed(2)}
@@ -97,7 +97,7 @@ function OfferCard({ offer }) {
               {Math.round((1 - offer.salePrice / offer.price) * 100)}% off
             </span>
           </div>
-        ) : offer.salePrice != null && offer.salePrice >= offer.price ? (
+        ) : offer.salePrice != null && offer.salePrice > 0 && offer.salePrice >= offer.price ? (
           <div className="mt-auto pt-3 text-xl font-bold text-white">
             £{Number(offer.salePrice).toFixed(2)}
           </div>
