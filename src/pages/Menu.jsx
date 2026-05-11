@@ -33,10 +33,15 @@ function Chip({ active, onClick, children }) {
   );
 }
 
+const WEBSHOP_ITEM_URL = "https://frenzyfieryfries-webshop.delivergate.com/food-menu";
+
 function ItemCard({ item }) {
   const hasOffer = item.salePrice != null && item.salePrice > 0 && item.salePrice < item.price;
   return (
-    <div className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20">
+    <a
+      href={WEBSHOP_ITEM_URL}
+      className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20"
+    >
       {item.imageUrl && (
         <div className="w-32 sm:w-40 shrink-0 bg-white/5 p-3">
           <div className="h-full w-full overflow-hidden rounded-2xl bg-zinc-950">
@@ -80,7 +85,7 @@ function ItemCard({ item }) {
           </div>
         )}
       </div>
-    </div>
+    </a>
   );
 }
 
