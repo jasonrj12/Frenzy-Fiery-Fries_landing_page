@@ -60,7 +60,7 @@ export default function SiteLayout() {
           <div className="absolute top-40 right-10 h-72 w-72 rounded-full bg-brand-mustard/15 blur-3xl" />
         </div>
 
-        <header className="sticky top-0 z-50">
+        <header className="fixed inset-x-0 top-0 z-50">
           <div className="border-b border-white/10 bg-zinc-950/60 backdrop-blur">
             <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
               <Link to="/" className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export default function SiteLayout() {
           </div>
         </header>
 
-        <main className="relative">
+        <main className="relative pt-24">
           <div className="pb-24 md:pb-0">
             <Outlet />
           </div>

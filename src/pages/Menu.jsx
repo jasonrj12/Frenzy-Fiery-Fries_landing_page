@@ -33,15 +33,12 @@ function Chip({ active, onClick, children }) {
   );
 }
 
-const WEBSHOP_ITEM_URL = "https://frenzyfieryfries-webshop.delivergate.com/food-menu";
+
 
 function ItemCard({ item }) {
   const hasOffer = item.salePrice != null && item.salePrice > 0 && item.salePrice < item.price;
   return (
-    <a
-      href={WEBSHOP_ITEM_URL}
-      className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20"
-    >
+    <div className="group flex overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur transition hover:border-white/20">
       {item.imageUrl && (
         <div className="w-32 sm:w-40 shrink-0 bg-white/5 p-3">
           <div className="h-full w-full overflow-hidden rounded-2xl bg-zinc-950">
@@ -85,7 +82,7 @@ function ItemCard({ item }) {
           </div>
         )}
       </div>
-    </a>
+    </div>
   );
 }
 
@@ -184,44 +181,44 @@ export default function Menu() {
   }, [category, items, query, sort]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
-            <Icon name="spark" className="h-4 w-4 text-brand-mustard" />
-            {itemsSource === "delivergate" ? "Menu" : "Menu"}
-          </div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Menu
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">
-            Search items, filter by category, and sort by price.
-          </p>
-        </div>
-
-      </div>
-
-      {remoteStatus === "loading" ? (
-        <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 backdrop-blur">
-          Loading menu…
-        </div>
-      ) : null}
-
-      {remoteStatus === "error" ? (
-        <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 backdrop-blur">
-          <div className="font-semibold text-white">
-            Something went wrong
-          </div>
-          <div className="mt-2 text-white/70">
-            We couldn’t load the menu right now. Please try again in a moment.
-          </div>
-          <div className="mt-3 text-xs text-white/50">
-            Showing a limited menu for now.
+    <>
+      <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 sm:pt-14">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
+              <Icon name="spark" className="h-4 w-4 text-brand-mustard" />
+              {itemsSource === "delivergate" ? "Menu" : "Menu"}
+            </div>
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              Menu
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">
+              Search items, filter by category, and sort by price.
+            </p>
           </div>
         </div>
-      ) : null}
 
-      <div className="relative z-30 mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+        {remoteStatus === "loading" ? (
+          <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 backdrop-blur">
+            Loading menu…
+          </div>
+        ) : null}
+
+        {remoteStatus === "error" ? (
+          <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-white/70 backdrop-blur">
+            <div className="font-semibold text-white">
+              Something went wrong
+            </div>
+            <div className="mt-2 text-white/70">
+              We couldn’t load the menu right now. Please try again in a moment.
+            </div>
+            <div className="mt-3 text-xs text-white/50">
+              Showing a limited menu for now.
+            </div>
+          </div>
+        ) : null}
+
+        <div className="relative z-30 mt-8 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="text-xs font-semibold uppercase tracking-wider text-white/60">
@@ -307,8 +304,8 @@ export default function Menu() {
           </div>
 
           <div className="mt-5 overflow-hidden">
-            <div className="flex overflow-x-auto gap-2 pb-2 -mb-2 scrollbar-hide">
-              <Chip active={category === "all"} onClick={() => setCategory("all")}>
+            <div className="flex overflow-x-auto gap-2 pb-2 -mb-2 custom-scrollbar-x">
+              <Chip active={category === "all"} onClick={() => setCategory("all")}> 
                 All
               </Chip>
               {categories.map((c) => (
@@ -318,46 +315,58 @@ export default function Menu() {
               ))}
             </div>
           </div>
-
-      </div>
-
-      <div className="mt-10">
-        {sort === "featured" ? (
-          categories.map((c) => {
-            const catItems = filtered.filter((i) => i.category === c);
-            if (catItems.length === 0) return null;
-            return (
-              <div key={c} className="mb-12">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-black uppercase tracking-wide text-white">
-                    {c}
-                  </h2>
-                </div>
-                <div className="mt-3 mb-6 h-px w-full bg-gradient-to-r from-amber-400/50 to-transparent" />
-                <div className="grid gap-4 md:grid-cols-2">
-                  {catItems.map((item) => (
-                    <ItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {filtered.map((item) => (
-              <ItemCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/70 backdrop-blur">
-          No items match your filters. Try clearing the search or raising the
-          heat cap.
         </div>
-      ) : null}
-    </div>
+
+        <div className="mt-10">
+          {sort === "featured" ? (
+            categories.map((c) => {
+              const catItems = filtered.filter((i) => i.category === c);
+              if (catItems.length === 0) return null;
+              return (
+                <div key={c} className="mb-12">
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-black uppercase tracking-wide text-white">
+                      {c}
+                    </h2>
+                  </div>
+                  <div className="mt-3 mb-6 h-px w-full bg-gradient-to-r from-amber-400/50 to-transparent" />
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {catItems.map((item) => (
+                      <ItemCard key={item.id} item={item} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {filtered.map((item) => (
+                <ItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/70 backdrop-blur">
+            No items match your filters. Try clearing the search or raising the
+            heat cap.
+          </div>
+        ) : null}
+      </div>
+
+      {/* Order Now Button (bottom block) */}
+      <div className="w-full flex justify-center mt-4 mb-2">
+        <a
+          href="https://frenzyfieryfries-webshop.delivergate.com/food-menu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-fit items-center justify-center rounded-full bg-brand-mustard px-8 py-3 text-lg font-bold text-zinc-900 shadow-lg transition hover:bg-yellow-400"
+        >
+          Order Now
+        </a>
+      </div>
+    </>
   );
 }
 
