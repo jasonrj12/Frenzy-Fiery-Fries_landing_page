@@ -177,6 +177,17 @@ export default function SiteLayout() {
             <span className="text-lg">↑</span>
           </button>
 
+          <a
+            href="https://wa.me/1234567890?text=Hello%20Frenzy%20%26%20Fiery%20Fries!%20I%20would%20like%20to%20know%20more%20about%20your%20services."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-24 left-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition hover:bg-green-600 animate-pulse-button md:bottom-5"
+            aria-label="Contact us on WhatsApp"
+            title="Chat with us on WhatsApp"
+          >
+            <Icon name="whatsapp" className="h-7 w-7" />
+          </a>
+
           <footer className="border-t border-white/10 bg-zinc-950 pt-16 pb-8">
             <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
               <div className="grid grid-cols-1 gap-12 md:grid-cols-4 lg:grid-cols-5">
